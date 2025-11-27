@@ -10,7 +10,7 @@ export default function NoteList() {
   });
 
   if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading notes</p>;
+  if (isError) return <p>Failed to load notes</p>;
   if (!data || data.notes.length === 0) return null;
 
   return (
