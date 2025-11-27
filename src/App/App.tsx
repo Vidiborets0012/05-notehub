@@ -1,19 +1,13 @@
-import { useEffect } from "react";
-import { fetchNotes } from "../services/noteService";
+import css from "./App.module.css";
 
 export default function App() {
-  useEffect(() => {
-    const test = async () => {
-      try {
-        const data = await fetchNotes({ page: 1, perPage: 5 });
-        console.log("Notes:", data);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    };
-
-    test();
-  }, []);
-
-  return <div>Testing fetch...</div>;
+  return (
+    <div className={css.app}>
+      <header className={css.toolbar}>
+        {/* Компонент SearchBox */}
+        {/* Пагінація */}
+        {/* Кнопка створення нотатки */}
+      </header>
+    </div>
+  );
 }
