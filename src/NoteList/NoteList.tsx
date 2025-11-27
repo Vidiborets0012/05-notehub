@@ -1,12 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "../services/noteService";
 
 import css from "./NoteList.module.css";
 
-export default function NoteList() {
+interface NoteListProps {
+  page: number;
+}
+
+export default function NoteList({ page }: NoteListProps) {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes"],
-    queryFn: () => fetchNotes(),
+    queryKey: ["notes", page],
+    queryFn: () => fetchNotes({ page, perPage: 12 }),
+    placeholderData: keepPreviousData,
   });
 
   if (isLoading) return <p>Loading...</p>;
