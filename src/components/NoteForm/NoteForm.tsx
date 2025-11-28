@@ -3,8 +3,11 @@ import { createNote } from "../../services/noteService";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import css from "./NoteForm.module.css";
 import type { CreateNoteData } from "../../types/note";
+import { useState } from "react";
+import InlineError from "../common/InlineError/InlineError";
+
+import css from "./NoteForm.module.css";
 
 interface NoteFormProps {
   onClose: () => void;
@@ -24,6 +27,8 @@ const noteSchema = Yup.object().shape({
 });
 
 export default function NoteForm({ onClose }: NoteFormProps) {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -32,6 +37,9 @@ export default function NoteForm({ onClose }: NoteFormProps) {
       toast.success("Note created successfully!");
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       onClose();
+    },
+    onError: (err: Error) => {
+      setErrorMessage(err.message);
     },
   });
 
@@ -82,6 +90,8 @@ export default function NoteForm({ onClose }: NoteFormProps) {
             </Field>
             <ErrorMessage component="span" name="tag" className={css.error} />
           </div>
+
+          {errorMessage && <InlineError message={errorMessage} />}
 
           <div className={css.actions}>
             <button

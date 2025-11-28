@@ -17,7 +17,7 @@ export default function App() {
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["notes", page, debouncedSearch],
     queryFn: () => fetchNotes({ page, perPage: 12, search: debouncedSearch }),
     placeholderData: keepPreviousData,
@@ -48,6 +48,7 @@ export default function App() {
         notes={data?.notes ?? []}
         isLoading={isLoading}
         isError={isError}
+        error={error}
       />
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>

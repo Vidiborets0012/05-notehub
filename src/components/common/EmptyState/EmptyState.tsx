@@ -1,6 +1,14 @@
 import css from "./EmptyState.module.css";
 
-export default function EmptyState() {
+interface EmptyStateProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export default function EmptyState({
+  title = "This section is currently empty.",
+  subtitle = "Create your first note.",
+}: EmptyStateProps) {
   return (
     <div className={css.wrapper}>
       <svg
@@ -60,8 +68,8 @@ export default function EmptyState() {
       </svg>
 
       <p className={css.text}>
-        This section is currently empty.
-        <span>Create your first note.</span>
+        {title}
+        <span>{subtitle}</span>
       </p>
     </div>
   );

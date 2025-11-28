@@ -3,8 +3,8 @@ import type { Note } from "../../types/note";
 import { deleteNote } from "../../services/noteService";
 import toast from "react-hot-toast";
 import Loader from "../common/Loader/Loader";
-import ErrorMessage from "../common/ErrorMessage/ErrorMessage";
 import EmptyState from "../common/EmptyState/EmptyState";
+import ErrorMessage from "../common/ErrorMessage/ErrorMessage";
 
 import css from "./NoteList.module.css";
 
@@ -12,9 +12,15 @@ interface NoteListProps {
   notes: Note[];
   isLoading: boolean;
   isError: boolean;
+  error: Error | null;
 }
 
-export default function NoteList({ notes, isLoading, isError }: NoteListProps) {
+export default function NoteList({
+  notes,
+  isLoading,
+  isError,
+  error,
+}: NoteListProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -26,8 +32,14 @@ export default function NoteList({ notes, isLoading, isError }: NoteListProps) {
   });
 
   if (isLoading) return <Loader />;
-  if (isError) return <ErrorMessage message="Failed to load notes" />;
-  if (!notes.length && !isLoading) return <EmptyState text="No notes found" />;
+  if (isError) return <ErrorMessage message={error?.message} />;
+  if (!notes.length && !isLoading)
+    return (
+      <EmptyState
+        title="No notes found"
+        subtitle="Try creating your first note."
+      />
+    );
 
   return (
     <ul className={css.list}>
