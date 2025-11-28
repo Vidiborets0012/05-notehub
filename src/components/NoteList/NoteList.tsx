@@ -2,6 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Note } from "../../types/note";
 import { deleteNote } from "../../services/noteService";
 import toast from "react-hot-toast";
+import Loader from "../common/Loader/Loader";
+import ErrorMessage from "../common/ErrorMessage/ErrorMessage";
+import EmptyState from "../common/EmptyState/EmptyState";
 
 import css from "./NoteList.module.css";
 
@@ -22,9 +25,9 @@ export default function NoteList({ notes, isLoading, isError }: NoteListProps) {
     },
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Failed to load notes</p>;
-  if (!notes.length && !isLoading) return <p>No notes found</p>;
+  if (isLoading) return <Loader />;
+  if (isError) return <ErrorMessage message="Failed to load notes" />;
+  if (!notes.length && !isLoading) return <EmptyState text="No notes found" />;
 
   return (
     <ul className={css.list}>
