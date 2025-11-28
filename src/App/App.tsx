@@ -3,11 +3,12 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
 import SearchBox from "../SearchBox/SearchBox";
+import Modal from "./Modal/Modal";
 import { fetchNotes } from "../services/noteService";
 import { useDebounce } from "use-debounce";
-import Modal from "./Modal/Modal";
 
 import css from "./App.module.css";
+import NoteForm from "../NoteForm/NoteForm";
 
 export default function App() {
   const [page, setPage] = useState(1);
@@ -49,7 +50,9 @@ export default function App() {
         isError={isError}
       />
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>{/* NoteForm */}</Modal>
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <NoteForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
       )}
     </div>
   );

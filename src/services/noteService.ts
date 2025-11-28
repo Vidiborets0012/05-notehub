@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Note, NoteTag } from "../types/note";
+import type { CreateNoteData, Note, NoteTag } from "../types/note";
 import toast from "react-hot-toast";
 
 axios.defaults.baseURL = "https://notehub-public.goit.study/api";
@@ -18,12 +18,6 @@ interface FetchNotesParams {
 interface FetchNotesResponse {
   notes: Note[];
   totalPages: number;
-}
-
-interface CreateNoteData {
-  title: string;
-  content: string;
-  tag: NoteTag;
 }
 
 export const fetchNotes = async (
