@@ -1,4 +1,8 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Note } from "../types/note";
+import { deleteNote } from "../services/noteService";
+import toast from "react-hot-toast";
+
 import css from "./NoteList.module.css";
 
 interface NoteListProps {
@@ -8,9 +12,18 @@ interface NoteListProps {
 }
 
 export default function NoteList({ notes, isLoading, isError }: NoteListProps) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (id: string) => deleteNote(id),
+    onSuccess: () => {
+      toast.success("Note deleted");
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+  });
+
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Failed to load notes</p>;
-  // if (!notes.length) return null;
   if (!notes.length && !isLoading) return <p>No notes found</p>;
 
   return (
@@ -21,7 +34,13 @@ export default function NoteList({ notes, isLoading, isError }: NoteListProps) {
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <button className={css.button}>Delete</button>
+            <button
+              className={css.button}
+              onClick={() => mutation.mutate(note.id)}
+              disabled={mutation.isPending}
+            >
+              Delete
+            </button>
           </div>
         </li>
       ))}

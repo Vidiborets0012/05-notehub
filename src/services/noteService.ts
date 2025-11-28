@@ -76,3 +76,37 @@ export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
     throw new Error("Unknown error occurred");
   }
 };
+
+export const deleteNote = async (id: string): Promise<Note> => {
+  try {
+    const response = await axios.delete<Note>(`/notes/${id}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        toast.error("Invalid ID format");
+        throw new Error("Invalid ID format");
+      }
+
+      if (status === 403) {
+        toast.error("Invalid token");
+        throw new Error("Invalid token");
+      }
+
+      if (status === 404) {
+        toast.error("Note not found");
+        throw new Error("Note not found");
+      }
+
+      if (status === 500) {
+        toast.error("Server error");
+        throw new Error("Server error");
+      }
+    }
+
+    toast.error("Unknown error occurred");
+    throw new Error("Unknown error");
+  }
+};
