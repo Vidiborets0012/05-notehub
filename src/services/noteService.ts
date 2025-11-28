@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { CreateNoteData, Note, NoteTag } from "../types/note";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 axios.defaults.baseURL = "https://notehub-public.goit.study/api";
 axios.defaults.headers.common["Authorization"] = `Bearer ${
@@ -20,6 +20,19 @@ interface FetchNotesResponse {
   totalPages: number;
 }
 
+function throwApiError(error: unknown): never {
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+
+    if (status === 400) throw new Error("Validation failed");
+    if (status === 403) throw new Error("Invalid token");
+    if (status === 404) throw new Error("Note not found");
+    if (status === 500) throw new Error("Server error");
+  }
+
+  throw new Error("Unknown error");
+}
+
 export const fetchNotes = async (
   params: FetchNotesParams = {}
 ): Promise<FetchNotesResponse> => {
@@ -29,22 +42,8 @@ export const fetchNotes = async (
     });
 
     return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-
-      if (status === 403) {
-        toast.error("Invalid token");
-        throw new Error("Unauthorized: Invalid token");
-      }
-
-      if (status === 500) {
-        toast.error("Server error: Something went wrong");
-        throw new Error("Server error");
-      }
-    }
-    toast.error("Unknown error occurred");
-    throw new Error("Unknown error occurred");
+  } catch (error) {
+    throwApiError(error);
   }
 };
 
@@ -53,60 +52,15 @@ export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
     const response = await axios.post<Note>("/notes", noteData);
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-
-      if (status === 400) {
-        toast.error("Validation failed");
-        throw new Error("Validation failed");
-      }
-
-      if (status === 403) {
-        toast.error("Invalid token");
-        throw new Error("Invalid token");
-      }
-
-      if (status === 500) {
-        toast.error("Server error, please try again later");
-        throw new Error("Server error");
-      }
-    }
-
-    toast.error("Unknown error occurred");
-    throw new Error("Unknown error occurred");
+    throwApiError(error);
   }
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
   try {
-    const response = await axios.delete<Note>(`/notes/${id}`);
+    const response = await axios.delete(`/notes/${id}`);
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-
-      if (status === 400) {
-        toast.error("Invalid ID format");
-        throw new Error("Invalid ID format");
-      }
-
-      if (status === 403) {
-        toast.error("Invalid token");
-        throw new Error("Invalid token");
-      }
-
-      if (status === 404) {
-        toast.error("Note not found");
-        throw new Error("Note not found");
-      }
-
-      if (status === 500) {
-        toast.error("Server error");
-        throw new Error("Server error");
-      }
-    }
-
-    toast.error("Unknown error occurred");
-    throw new Error("Unknown error");
+    throwApiError(error);
   }
 };
