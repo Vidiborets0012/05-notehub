@@ -20,6 +20,12 @@ interface FetchNotesResponse {
   totalPages: number;
 }
 
+interface CreateNoteData {
+  title: string;
+  content: string;
+  tag: NoteTag;
+}
+
 export const fetchNotes = async (
   params: FetchNotesParams = {}
 ): Promise<FetchNotesResponse> => {
@@ -32,6 +38,7 @@ export const fetchNotes = async (
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
+
       if (status === 403) {
         toast.error("Invalid token");
         throw new Error("Unauthorized: Invalid token");
@@ -39,9 +46,38 @@ export const fetchNotes = async (
 
       if (status === 500) {
         toast.error("Server error: Something went wrong");
-        throw new Error("Server error)");
+        throw new Error("Server error");
       }
     }
+    toast.error("Unknown error occurred");
+    throw new Error("Unknown error occurred");
+  }
+};
+
+export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
+  try {
+    const response = await axios.post<Note>("/notes", noteData);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        toast.error("Validation failed");
+        throw new Error("Validation failed");
+      }
+
+      if (status === 403) {
+        toast.error("Invalid token");
+        throw new Error("Invalid token");
+      }
+
+      if (status === 500) {
+        toast.error("Server error, please try again later");
+        throw new Error("Server error");
+      }
+    }
+
     toast.error("Unknown error occurred");
     throw new Error("Unknown error occurred");
   }
